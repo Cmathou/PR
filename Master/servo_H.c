@@ -10,15 +10,15 @@
 
 int j = 0;
 char currentPosCmd = 0; //iterateur sur la commande
-char cmdRecue = 0; //bool indiquant qu'il y a une commande Ã  traiter
+char cmdRecue = 0; //bool indiquant qu'il y a une commande à traiter
 char cmd[20]; //chaine complete de commande
-char typeCmd[5]; //premiÃ¨res lettres de la commande; indiquant son type
+char typeCmd[5]; //premières lettres de la commande; indiquant son type
 char periodServoHoriz = 5000;
 char timeHighServoHoriz = 1500;
+int valTimer = 0;
 
-sbit OutServoH = 0;//retrouver comment le definir comme une sortie
+sbit OutServoH = P3 ^ 7;//retrouver comment le definir comme une sortie
 
-sfr16 time = 0xCD;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void timerDelay(){ //delai de 10ms
@@ -74,11 +74,11 @@ void ServoHorizontal(char* typeCmd, char* cmd){
 			if(timeHighServoHoriz > 2400){
 				timeHighServoHoriz = 2400;
 			}
-			
 		}
 		currentPosCmd = 0;
 	}
-	long int valTimer = time;
+	
+	valTimer = (TH2<<8)+TL2;
 	
 	if(valTimer < timeHighServoHoriz*22){
 		OutServoH = 1;
