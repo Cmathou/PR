@@ -10,9 +10,9 @@
 
 int j = 0;
 char currentPosCmd = 0; //iterateur sur la commande
-char cmdRecue = 0; //bool indiquant qu'il y a une commande à traiter
+char cmdRecue = 0; //bool indiquant qu'il y a une commande Ã  traiter
 char cmd[20]; //chaine complete de commande
-char typeCmd[5]; //premières lettres de la commande; indiquant son type
+char typeCmd[5]; //premiÃ¨res lettres de la commande; indiquant son type
 char periodServoHoriz = 5000;
 char timeHighServoHoriz = 1500;
 
@@ -71,7 +71,7 @@ void ServoHorizontal(char* typeCmd, char* cmd){
 			if(timeHighServoHoriz < 600){
 				timeHighServoHoriz = 600;
 			}
-			if(timeHighServoHoriz < 2400){
+			if(timeHighServoHoriz > 2400){
 				timeHighServoHoriz = 2400;
 			}
 			
