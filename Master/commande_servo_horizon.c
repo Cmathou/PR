@@ -27,7 +27,9 @@ void enable_int () {
 	return;
 }
 
-
+void reponse(char cmd) {
+	SBUF0 = cmd;
+}
 void interrupt_UART0() interrupt 4
 {
 	if(TI0){
@@ -36,6 +38,7 @@ void interrupt_UART0() interrupt 4
 	if(RI0){
 		RI0 = 0;
 		cmd[currentPosCmd] = SBUF0;
+		reponse(SBUF0);
 		if(cmd[currentPosCmd] == '\r'){ //!\\ verifier dernier caractère envoyé par Putty
 			cmdRecue = 1;
 			currentPosCmd = 0;
@@ -43,27 +46,25 @@ void interrupt_UART0() interrupt 4
 	}
 }
 
-void configTimer2(){
-	RCLK0 = 1;//UART0
-	TCLK0 = 1;//UART0
-	CPRL2 = 0;
-	CKCON |= 0x20;
-	RCAP2H = 0xFF;
-	RCAP2L = 0xB8;
-	TR2 = 1; // Activation du timer 2
+void configTimer1(){
+	TMOD |= 0x20;
+	TMOD &= 0x2F;
+	CKCON |= 0x8;
+	TH1 = 220;
+	TR1 = 1; // Activation du timer 1
 }
 
 
 void configUART0(){
 	P0MDOUT = 0xFF;
-	PCON = 0x00;
-	SCON0 = 0x70;
+	PCON &= 0x7F;
+	SCON0 |= 0xF0;
 	XBR0 |= 0x04;
 }
 
 
 void init(){
-	configTimer2();
+	configTimer1();
 	enable_int();
 	configUART0();
 	P3MDOUT = P3MDOUT | 0x10;
@@ -77,26 +78,6 @@ char* comprehensionCmd(char* cmd){
 	currentPosCmd = 0;
 	return typeCmd;
 }
-
-void ServoHorizontal(typeCmd, cmd){
-	char* consigne;
-	char* currentPosConsigne;
-	if(typeCmd == "CS"){
-		while(cmd[currentPosCmd] != ' '){ //relecture CS
-			currentPosCmd++;
-		}
-		currentPosCmd++;
-		if(cmd[currentPosCmd] == 'H'){ // 'H' pour le servo horizontal, 'V' pour le vertical
-			while(cmd[currentPosCmd] != ' '){
-				currentPosCmd++;
-				consigne[currentPosCmd] = cmd[currentPosCmd];
-			}
-			timeHighServoHoriz = 
-		}
-		currentPosCmd = 0;
-	}
-}
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +93,7 @@ void main(){
 	OSCICN = OSCICN | 0x08; //utilise l'oscillateur externe
 	
 	init();
-
+  SBUF0 = 'T';
 	while(1) 
 	{
 		// Gestion cmd
