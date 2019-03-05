@@ -58,7 +58,7 @@ void init(){
 void ServoHorizontal(char* typeCmd, char* cmd){
 	char consigne[5];
 	char currentPosConsigne = 0;
-	if(typeCmd == "CS"){
+	if(strcompare(typeCmd, "CS") == 0){
 		while(cmd[currentPosCmd] != ' '){ //relecture CS
 			currentPosCmd++;
 		}
