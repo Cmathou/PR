@@ -13,13 +13,13 @@ char currentPosCmd = 0; //iterateur sur la commande
 char cmdRecue = 0; //bool indiquant qu'il y a une commande à traiter
 char cmd[20]; //chaine complete de commande
 char typeCmd[5]; //premières lettres de la commande; indiquant son type
-int timeHighServoHoriz = 1050;
+int timeHighServoHoriz = 2350;
 unsigned int valTimer = 0;
 unsigned int valHigh = 0;
 
 sbit OutServoH = P0 ^ 0;
 
-int dist = 0;
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void timerDelay(){ //delai de 10ms
@@ -80,73 +80,19 @@ void ServoHorizontal(char* typeCmd, char* cmd){
 		currentPosCmd = 0;
 	}
 	
-		valTimer = (TH2<<8)+TL2;
-		valHigh = timeHighServoHoriz*22;
-		
-		
-		if(valTimer < valHigh){
-			OutServoH = 1;
-		} else {
-			OutServoH = 0;
-		}
+	valTimer = (TH2<<8)+TL2;
+	valHigh = timeHighServoHoriz*22;
 	
-}
-
-void moveToPos(signed int consigne) {
 	
-	timeHighServoHoriz = 1500+consigne*10; //consigne = +/- 90 => timeHigh = [600; 2400] us
-	
-	if(timeHighServoHoriz < 600){
-		timeHighServoHoriz = 600;
-	}
-	if(timeHighServoHoriz > 2400){
-		timeHighServoHoriz = 2400;
+	if(valTimer < valHigh){
+		OutServoH = 1;
+	} else {
+		OutServoH = 0;
 	}
 	
-		valTimer = (TH2<<8)+TL2;
-		valHigh = timeHighServoHoriz*22;
-		
-		
-		if(valTimer < valHigh){
-			OutServoH = 1;
-		} else {
-			OutServoH = 0;
-		}
-	
 }
 
-int detect(){
-	return 20;
-}
 
-void mob(int resolution){
-	signed int angle = -90;
-	
-	while(angle <= 90){
-		moveToPos(angle);
-		dist = detect();
-		angle = angle+resolution;
-	}	
-}
-
-int mos(int resolution){
-	signed int angle = -90;
-	int dist_min = 400;
-	int angle_min = 0;
-	
-	while(angle <= 90){
-		moveToPos(angle);
-		dist = detect();
-		
-		if(dist<dist_min){
-			dist_min = dist;
-			angle_min = angle;
-		}
-		
-		angle = angle+resolution;
-	}
-	return dist_min;
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -165,11 +111,5 @@ void main(){
 	while(1) 
 	{
 		ServoHorizontal(typeCmd, cmd);
-		//mob(10);
-		//moveToPos(-80);
 	}
 }
-
-
-
-
