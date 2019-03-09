@@ -53,7 +53,7 @@
 // macro MAX_BUFLEN  
 
 //*************************************************************************************************
-#include <Master/c8051F020.h>                    // SFR declarations
+#include <c8051F020.h>                    // SFR declarations
 #include <stdio.h>
 #include <intrins.h>
 #include <string.h>
@@ -75,8 +75,8 @@
 // Structure de gestion de buffer circulaire
 	//rb_start: pointeur sur l'adresse de début du buffer 
 	// rb_end: pointeur sur l'adresse de fin du buffer	
-	// rb_in: pointeur sur la donnéeàlire
-	// rb_out: pointeur sur la caseàécrire
+	// rb_in: pointeur sur la donnée à lire
+	// rb_out: pointeur sur la case à écrire
 		
 #define RB_CREATE(rb, type) \
    struct { \
@@ -89,7 +89,7 @@
 //Initialisation de la structure de pointeurs 
 // rb: adresse de la structure
 // start: adresse du premier élément du buffer 
-// number: nombre d'éléments du buffer - 1	(le "-1" n'estàmon avis pas nécessaire)
+// number: nombre d'éléments du buffer - 1	(le "-1" n'est à mon avis pas nécessaire)
 #define RB_INIT(rb, start, number) \
          ( (rb)->rb_in = (rb)->rb_out= (rb)->rb_start= start, \
            (rb)->rb_end = &(rb)->rb_start[number] )
@@ -162,9 +162,9 @@ void UART0_ISR(void) interrupt 0x4 {
 //**************************************************************************************************
 void init_Serial_Buffer(void) {
 
-    RB_INIT(&out, outbuf, MAX_BUFLEN-1);           /* set up TX ring buffer */
-    RB_INIT(&in, inbuf,MAX_BUFLEN-1);             /* set up RX ring buffer */
-
+                /* set up RX ring buffer */
+RB_INIT(&out, outbuf, MAX_BUFLEN-1);           /* set up TX ring buffer */
+    RB_INIT(&in, inbuf,MAX_BUFLEN-1); 
 }
 // **************************************************************************************************
 // SerOutchar: envoi d'un caractére dans le buffer de transmission de la liaison série
@@ -178,7 +178,7 @@ unsigned char serOutchar(char c) {
 
   	if(!TXactive) {
 		TXactive = 1;                      /* indicate ongoing transmission */
- 	  TI0 = 1;//   Placer le bit TIà1 pour provoquer le déclenchement de l'interruption
+ 	  TI0 = 1;//   Placer le bit TI à 1 pour provoquer le déclenchement de l'interruption
   	}
 	return 0;  // opération correctement réalisée 
   }
@@ -268,7 +268,7 @@ void cfg_UART0_mode1(void)
 		PCON  |= 0x80; //SMOD0: UART0 Baud Rate Doubler Disabled.
 		PCON &= 0xBF;  // SSTAT0=0
 		SCON0 = 0x70;   // Mode 1 - Check Stop bit - Reception validée
-		TI0 = 1;        // Transmission: octet transmis (prétàrecevoir un char
+		TI0 = 1;        // Transmission: octet transmis (prét à recevoir un char
 					          // pour transmettre			
     ES0 = 1;        // interruption UART0 autorisée	
 }
