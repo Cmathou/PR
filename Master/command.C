@@ -1,9 +1,13 @@
+#include "c8051F020.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "command.h"
+#include "servo_H.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
+
+#define R90 390
 
 int xdata dS = 20;
 char xdata D_nbr = 0;
@@ -47,12 +51,22 @@ int process(char* cmd_str) {
 	}
 	
 	if (strcmp(cmd, "RD") == 0) {		//rotation de 90° droite
-		serOutstring1("mogo 1:20 2:-20\r");
+		R(0);
 		return 0;
 	}
 	
 	if (strcmp(cmd, "RG") == 0) {		//rotation de 90° gauche
-		serOutstring1("stop\r");
+		R(1);
+		return 0;
+	}
+	
+	if (strcmp(cmd, "CS") == 0) {		//servo H
+		if (ServoHorizontal(cmd, param1, param2) == 1) {
+			valid();
+		}
+		else {
+			invalid();
+		}
 		return 0;
 	}
 	
@@ -96,6 +110,23 @@ void TV(char* param) {
 	else {
 		invalid();
 	}
+}
+
+void R(char cas) {
+	int i;
+	if (cas == 0) {
+		serOutstring1("mogo 1:-15 2:15\r");
+	}
+	else {
+		serOutstring1("mogo 1:15 2:-15\r");
+	}
+	for (i = 0; i < R90; i++) {
+		TMR3CN |= 0x04;
+		while ((TMR3CN & 0x80) != 0x80);
+		TMR3CN &= 0x7F;
+	}
+	serOutstring1("stop\r");
+	valid();
 }
 
 void AB(char* param, char sign) {

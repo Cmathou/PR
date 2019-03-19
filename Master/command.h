@@ -5,3 +5,4 @@ void AB(char*, char);
 void S();
 void D(char*);
 void TV(char*);
+void R(char);
