@@ -5,6 +5,7 @@
 #include "COM_UART.h"
 #include "timers.h"
 #include "servo_H.h"
+//#include "distance.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
@@ -22,10 +23,12 @@ void main(void) {
 	cfg_UART1_mode1();
 	init_Serial_Buffer();
 	init_Serial_Buffer1();
+	
 	EA = 1;
 	
-	//init servo
+	//init
 	init_servoH();
+	//init_dist();
 	
 	while (1) {
 		ServoHorizontal("","","");
