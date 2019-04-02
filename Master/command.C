@@ -8,15 +8,12 @@
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-#define R90 430
-
-int xdata dS = 20;
-char xdata D_nbr = 0;
+static char xdata D_nbr = 0;
 
 
 int process(char* cmd_str) {
-	char xdata retourC[8];
-	int xdata retourI;
+	//char xdata retourC[8];
+	//int xdata retourI;
 	char cmd[4] = "\0";
 	char param1[7] = "\0";
 	char param2[7] = "\0";
@@ -37,7 +34,7 @@ int process(char* cmd_str) {
 	if (D_nbr != 0) {
 		
 		if (strcmp(cmd, "L") == 0) {	//lumiere
-			LumiereDegra(param1, param2, param3, param4);
+			//LumiereDegra(param1, param2, param3, param4);
 			valid();
 			return 0;
 		}
@@ -58,8 +55,7 @@ int process(char* cmd_str) {
 		}
 		
 		if (strcmp(cmd, "S") == 0) {		//stop les moteurs
-			serOutstring1("stop\r");
-			valid();
+			S();
 			return 0;
 		}
 		
@@ -146,67 +142,5 @@ void D(char* param) {
 	}
 	else {
 		invalid();
-	}
-}
-
-void TV(char* param) {
-	int xdata speed = atoi(param);
-	if (5 <= speed && speed <= 100) {
-		dS = speed;
-		valid();
-	}
-	else {
-		invalid();
-	}
-}
-
-void R(char cas, int siz) {
-	int i;
-	int j;
-	if (cas == 0) {
-		serOutstring1("mogo 1:-15 2:15\r");
-	}
-	else {
-		serOutstring1("mogo 1:15 2:-15\r");
-	}
-	for (j = 0; j <= siz; j++) {
-		for (i = 0; i < R90; i++) {
-			TMR3CN |= 0x04;
-			while ((TMR3CN & 0x80) != 0x80);
-			TMR3CN &= 0x7F;
-		}
-	}
-	serOutstring1("stop\r");
-	valid();
-}
-
-void AB(char* param, char sign) {
-	int xdata speed = atoi(param);
-	char xdata cmd[32] = "mogo 1:";
-	if (strcmp(param, "") ==0) {
-		sprintf(param, "%d", dS);
-		if (sign == '1') {
-			strcat(strcat(strcat(strcat(strcat(cmd, "mogo 1:-"), param), " 2:-"), param), "\r");
-		}
-		else {
-			strcat(strcat(strcat(strcat(strcat(cmd, "mogo 1:"), param), " 2:"), param), "\r");
-		}
-		serOutstring1(cmd);
-		valid();
-	}
-	else {
-		if (5 <= speed && speed <= 100) {
-			if (sign == '1') {
-			strcat(strcat(strcat(strcat(strcat(cmd, "mogo 1:-"), param), " 2:-"), param), "\r");
-		}
-		else {
-			strcat(strcat(strcat(strcat(strcat(cmd, "mogo 1:"), param), " 2:"), param), "\r");
-		}
-			serOutstring1(cmd);
-			valid();
-		}
-		else {
-			invalid();
-		}
 	}
 }
