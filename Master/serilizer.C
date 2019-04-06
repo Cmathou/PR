@@ -14,7 +14,8 @@ static int xdata dS = 20;
 
 void timeSerilizer() {
     if (timePass(time)) {
-        serOutstring1("stop\r");
+			serOutstring1("stop\r");
+			time = 0;	
     }
 }
 
@@ -42,7 +43,7 @@ void R(char cas, int siz)
     {
         serOutstring1("mogo 1:15 2:-15\r");
     }
-    time = getTime(siz * R90);
+    time = getTime((siz + 1) * R90);
     valid();
 }
 
@@ -86,8 +87,7 @@ void AB(char *param, char sign)
     }
 }
 
-void S()
-{
+void S() {
     serOutstring1("stop\r");
     valid();
 }

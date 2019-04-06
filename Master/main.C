@@ -5,13 +5,14 @@
 #include "COM_UART.h"
 #include "timers.h"
 #include "servo_H.h"
-//#include "distance.h"
+#include "serilizer.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
+static char xdata cmd[32] = "\0";
+
 void putty() {
 	char c[2];
-	char xdata cmd[32] = "\0";
 	while ((c[0] = serInchar()) != 0) {
 			serOutchar(c[0]);
 			if (c[0] == '\r') {
@@ -46,7 +47,6 @@ void main(void) {
 	
 	//init
 	init_servoH();
-	//init_dist();
 	
 	while (1) {
 		ServoHorizontal("","","");

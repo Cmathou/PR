@@ -4,7 +4,6 @@
 #include <string.h>
 #include "command.h"
 #include "servo_H.h"
-//#include "distance.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
@@ -111,6 +110,8 @@ int process(char* cmd_str) {
 	
 	if (strcmp(cmd, "E") == 0) {		//fin d'epreuve
 		D_nbr = 0;
+		valid();
+		return 0;
 	}
 		
 	invalid();
