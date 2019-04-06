@@ -20,7 +20,7 @@ List of all part of the project.
 ---
 
 ## <span style="color:grey"> **PCs** </span>
-- **Centrale de commande** : communacation with other PCs for processing and data aquisition. Used to control master on command line.
+- **Centrale de commande** : communication with other PCs for processing and data aquisition. Used to control master on command line.
 
 ---
 
