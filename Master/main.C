@@ -5,13 +5,33 @@
 #include "COM_UART.h"
 #include "timers.h"
 #include "servo_H.h"
-//#include "distance.h"
+#include "serilizer.h"
+#include "obstacle.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-void main(void) {
+static char xdata cmd[32] = "\0";
+
+void putty() {
 	char c[2];
-	char xdata cmd[32] = "\0";
+	while ((c[0] = serInchar()) != 0) {
+			serOutchar(c[0]);
+			if (c[0] == '\r') {
+				serOutchar('\n');
+				process(cmd);
+				cmd[0] = '\0';
+			}
+			else {
+				strcat(cmd, c);
+			}
+		}
+}
+
+void callback() {
+	timeSerilizer();
+}
+
+void main(void) {
 	
 	WDTCN = 0xde;                       // disable watchdog timer
 	WDTCN = 0xad;
@@ -27,21 +47,13 @@ void main(void) {
 	EA = 1;
 	
 	//init
+	serOutstring1("stop\r");
 	init_servoH();
-	//init_dist();
+	initObs();
 	
 	while (1) {
-		ServoHorizontal("","","");
-		while ((c[0] = serInchar()) != 0) {
-			serOutchar(c[0]);
-			if (c[0] == '\r') {
-				serOutchar('\n');
-				process(cmd);
-				cmd[0] = '\0';
-			}
-			else {
-				strcat(cmd, c);
-			}
-		}
+		//ServoHorizontal("","","");
+		putty();
+		callback();
 	}
 }

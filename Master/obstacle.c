@@ -9,145 +9,97 @@
 //  NOMS: Prummel
 //
 //------------------------------------------------------------------------------------
-#include "c8051F020.h"
+#include <stdio.h>
 #include <string.h>
+#include "c8051F020.h"
 
 //sbit LED = P1 ^ 6;
 // MD = P3 ^ 2 ;
 sbit MD_AV = P3 ^ 3;
 sbit MD_AR = P3 ^ 4;
 
-char cmd[20] = "MOU Front"; //chaine complete de commande
-char typeCmd[5] = "MOU"; //premières lettres de la commande; indiquant son type
-char currentPosCmd = 0; //iterateur sur la commande
+static int xdata distance;
 
-int distance; 
-int j;
-
-char mesure_flag = 0;
+static char xdata mesure_flag = 0;
 
 // Fonction d'initialisation des differents registres
-void init_1(){
-	//WDTCN = 0xDE;
-	//WDTCN = 0xAD;
-	
-	XBR2 = XBR2 | 0x40;
-	//P1MDOUT = P1MDOUT | 0x40;
-	P3MDOUT = P3MDOUT | 0x1C; //Gestion des entrées/sorties
-	
-	ADC0CN = ADC0CN | 0x80;
-	
-	T4CON = 0x01; 
-	
-	EA = 1;
-	EIE2 = EIE2 | 0x10; //Autorisation interruption 6 (externe)
-	P3IF = P3IF | 0x44; //front montant
-	
-	mesure_flag = 0;
-}
+void initObs() {
+    XBR2 |= 0x40;
+    P3MDOUT |= 0x1C;  //Gestion des entrÃ©es/sorties
+    MD_AV = 0;
+    MD_AR = 0;
 
-//fonction qui permet de verifier si la mesure est faite et de remettre le flag à 0 ensuite
-bit mesure_update() {
-  if (mesure_flag == 1) {
+    ADC0CN |= 0x80;
+
+    T4CON = 0x01;
+
+    EA = 1;
+    EIE2 |= 0x10;  //Autorisation interruption 6 (externe)
+    P3IF |= 0x04;  //front montant
+    P3IF &= 0xBF;
+
     mesure_flag = 0;
-    return 1;
-  }
-
-  return 0;
 }
 
-//fonction qui renvoie la distance mesurée
-int getMesure() { return distance; }
-
-// Delay pour le trigger du télémètre
-void delay_10us(){ //13us
-	int i;
-	for(i=0;i<22;i++){}
+// Delay pour le trigger du tÃ©lÃ©mÃ©tre
+void delay_10us() {  //13us
+    int i;
+    for (i = 0; i < 22; i++) {
+    }
 }
 
-void timerDelay(){ //delai de 10ms
-	j = 0;
-	for(j = 0; j < 25000; j++){
-}
+void timerDelay() {  //delai de 10ms
+    int j;
+    for (j = 0; j < 25000; j++) {
+    }
 }
 
-unsigned int MES_Dist_AV (void){ //Mesure distance avant
-	delay_10us();
-	
-	MD_AV = 0;
-	timerDelay();
-	return distance;
+void MES_Dist_AV(void) {  //Mesure distance avant
+    MD_AV = 1;
+    delay_10us();
+    MD_AV = 0;
+    timerDelay();
 }
-	
-unsigned int MES_Dist_AR (void){ //Mesure distance arriere 
-	
-	delay_10us();
-	
-	MD_AR = 0;
-	timerDelay();
-	return distance;
+
+void MES_Dist_AR(void) {  //Mesure distance arriere
+    MD_AR = 1;
+    delay_10us();
+    MD_AR = 0;
+    timerDelay();
 }
-void mesure() interrupt 18{
-	if((P3IF & 0x04)==0x04){ //P3IF port 3 interrupt flag
-		TH4 = 0;
-		TL4 = 0;
-		T4CON = T4CON | 0x04; //activation du timer4
-		P3IF = P3IF & 0xFB;
-		distance=0;
+void mesure() interrupt 18 {
+    if ((P3IF & 0x04) == 0x04) {  //P3IF is rising edge
+        TH4 = 0;
+        TL4 = 0;
+        T4CON |= 0x04;  //activation du timer4
+        P3IF &= 0xFB;   //set on falling edge
+    } else {
+        T4CON &= 0xFB;                       //desactivation du timer4
+        distance = (TH4 << 8 + TL4) / 120;   //conversion distance en cm
+        P3IF |= 0x04;                        //set rising edge
+        mesure_flag = 1;
+    }
+    P3IF &= 0xBF;
+}
+
+void mesure_distance(char *typeCmd, char *cmd) {
+	if (cmd == "B") {  //'Back' pour l'arriere
+		MES_Dist_AR();
 	}
-	else{
-		T4CON = T4CON & 0xFB; //activation du timer4
-		distance = (TH4*256 + TL4)/120; //conversion distance en cm
-		P3IF = P3IF | 0x04;
-		//remise du flag à 1
-		mesure_flag=1; 
-	}
-	P3IF = P3IF & 0xBF;
-}
-void mesure_distance(char* typeCmd,char* cmd){
-	char* consigne;
-//	char* currentPosConsigne;
-	if(strcmp(typeCmd,"MOU")==0){
-		while(cmd[currentPosCmd] != ' '){ //relecture MD
-			consigne[currentPosCmd] = cmd[currentPosCmd];
-			currentPosCmd++;
+	esle {
+		if (cmd == 'F') {  //'Front' pour l'arriere
+			MES_Dist_AV();
+		} else {
+			distance = -1;
+			mesure_flag = 1;
 		}
-		currentPosCmd++;
-		if(cmd[currentPosCmd] == "B"){ //'Back' pour l'arriere
-			MD_AR=1;
-			MES_Dist_AR ();
-		}
-		if(cmd[currentPosCmd] == 'F'){ //'Front' pour l'arriere
-			MD_AV=1;
-			MES_Dist_AV ();
-		}	
 	}
-
-	currentPosCmd = 0;
-
-	MD_AV=0;
-	MD_AR=0;
 }
 
-void main(){
-	WDTCN = 0xDE;   // Devalidation du watchdog 
-	WDTCN = 0xAD;
-
-	OSCXCN =  0xef; //configure external oscillator
-	delay_10us();
-	while(!(OSCXCN&(0x80))){}
-
-	OSCICN = OSCICN | 0x08; //utilise l'oscillateur externe
-	
-	init_1();
-	while(1) 
-	{
-		// Gestion cmd
-		
-		mesure_distance(typeCmd,cmd);
-		getMesure();
-		timerDelay();
-			
-		
-	}
+unsigned int MOU(char *typeCmd, char *cmd) {
+    char ret[] = 0;
+    mesure_distance(typeCmd, cmd);
+    while (!mesure_flag) {}
+    mesure_flag = 0;
+    return sprintf(ret, "%d", distance);
 }
