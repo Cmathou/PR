@@ -4,18 +4,33 @@
 #include "command.h"
 #include "COM_UART.h"
 #include "timers.h"
-#include "servo_H.h"
-//#include "distance.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-void main(void) {
+static char xdata cmd[32] = "\0";
+
+void putty() {
 	char c[2];
-	char xdata cmd[32] = "\0";
+	while ((c[0] = serInchar()) != 0) {
+			serOutchar(c[0]);
+			if (c[0] == '\r') {
+				serOutchar('\n');
+				process(cmd);
+				cmd[0] = '\0';
+			}
+			else {
+				strcat(cmd, c);
+			}
+		}
+}
+
+void callback() {
+}
+
+void main(void) {
 	
 	WDTCN = 0xde;                       // disable watchdog timer
 	WDTCN = 0xad;
-	timer_3();													// config timer 3
 	SYSCLK_Init ();                     // initialize oscillator
 	PORT_Init ();                       // initialize crossbar and GPIO
 	cfg_Clock_UART();
@@ -27,21 +42,9 @@ void main(void) {
 	EA = 1;
 	
 	//init
-	init_servoH();
-	//init_dist();
 	
 	while (1) {
-		ServoHorizontal("","","");
-		while ((c[0] = serInchar()) != 0) {
-			serOutchar(c[0]);
-			if (c[0] == '\r') {
-				serOutchar('\n');
-				process(cmd);
-				cmd[0] = '\0';
-			}
-			else {
-				strcat(cmd, c);
-			}
-		}
+		putty();
+		callback();
 	}
 }
