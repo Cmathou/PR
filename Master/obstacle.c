@@ -78,7 +78,7 @@ void mesure_distance(char *typeCmd, char *cmd) {
 	if (strcmp(cmd, "B")) {  //'Back' pour l'arriere
 		MES_Dist_AR();
 	}
-	esle {
+	else {
 		if (strcmp(cmd, "F")) {  //'Front' pour l'arriere
 			MES_Dist_AV();
 		} else {
