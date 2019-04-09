@@ -3,15 +3,16 @@
 #include <string.h>
 #include "c8051F020.h"
 #include "command.h"
+#include "obstacle.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
+#include "serilizer.h"
 #include "servo_H.h"
 
-static char xdata D_nbr = 0;
+static char D_nbr = 0;
 
 int process(char* cmd_str) {
-    //char xdata retourC[8];
-    //int xdata retourI;
+    char retour[8];
     char cmd[4] = "\0";
     char param1[7] = "\0";
     char param2[7] = "\0";
@@ -80,32 +81,26 @@ int process(char* cmd_str) {
         }
 
         if (strcmp(cmd, "CS") == 0) {  //servo H
-            if (param[0] == 'H') {
-                if (ServoHorizontal(cmd, param1, param2) == 1) {
-                    valid();
-                } else {
-                    invalid();
-                }
-                return 0;
+            if (ServoHorizontal(cmd, param1, param2) == 1) {
+                valid();
             } else {
-				//TODO SPI SEND
-			}
+                invalid();
+            }
+            return 0;
         }
-        /*
-		if (strcmp(cmd, "MOU") == 0) {		//mesure distance
-			retourI = mesure_distance(cmd, param1);
-			if (retourI != -1) {
-				sprintf(retourC, "%d", retourI);
-				serOutstring("Distance : ");
-				serOutstring(retourC);
-				serOutstring("\r\n");
-				valid();
-			}
-			else {
-				invalid();
-			}
-			return 0;
-		}*/
+
+        if (strcmp(cmd, "MOU") == 0) {  //mesure distance
+            strcpy(retour, MOU(cmd, param1));
+            if (retour != -1) {
+                serOutstring("Distance : ");
+                serOutstring(retour);
+                serOutstring("\r\n");
+                valid();
+            } else {
+                invalid();
+            }
+            return 0;
+        }
     }
 
     if (strcmp(cmd, "E") == 0) {  //fin d'epreuve
