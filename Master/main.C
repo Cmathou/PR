@@ -10,7 +10,7 @@
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-static char xdata cmd[32] = "\0";
+static char cmd[32] = "\0";
 
 void putty() {
 	char c[2];
@@ -50,9 +50,9 @@ void main(void) {
 	serOutstring1("stop\r");
 	init_servoH();
 	initObs();
-	
+
 	while (1) {
-		//ServoHorizontal("","","");
+		ServoHorizontal("","","");
 		putty();
 		callback();
 	}

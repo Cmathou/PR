@@ -9,7 +9,7 @@
 #include "serilizer.h"
 #include "servo_H.h"
 
-static char xdata D_nbr = 0;
+static char D_nbr = 0;
 
 int process(char* cmd_str) {
     char retour[8];

@@ -12,7 +12,7 @@ List of all part of the project.
   - **Communications** : SPI, Radio
 
 - [STM32](./STM32) :
-  - **Communications** : Bluetooth), SD
+  - **Communications** : Bluetooth, SD
 
 - [FPGA](./FPGA) :
   - **Communication** : Radio
