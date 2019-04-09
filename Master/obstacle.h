@@ -1,2 +1,2 @@
 void initObs();
-unsigned int MOU(char*, char*);
+char* MOU(char*, char*);

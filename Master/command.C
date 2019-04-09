@@ -12,7 +12,7 @@
 static char xdata D_nbr = 0;
 
 int process(char* cmd_str) {
-    char xdata retour[8];
+    char retour[8];
     char cmd[4] = "\0";
     char param1[7] = "\0";
     char param2[7] = "\0";
@@ -90,7 +90,7 @@ int process(char* cmd_str) {
         }
 
         if (strcmp(cmd, "MOU") == 0) {  //mesure distance
-            retour = MOU(cmd, param1);
+            strcpy(retour, MOU(cmd, param1));
             if (retour != -1) {
                 serOutstring("Distance : ");
                 serOutstring(retour);

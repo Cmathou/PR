@@ -48,24 +48,16 @@ void delay_10us() {  //13us
     }
 }
 
-void timerDelay() {  //delai de 10ms
-    int j;
-    for (j = 0; j < 25000; j++) {
-    }
-}
-
 void MES_Dist_AV(void) {  //Mesure distance avant
     MD_AV = 1;
     delay_10us();
     MD_AV = 0;
-    timerDelay();
 }
 
 void MES_Dist_AR(void) {  //Mesure distance arriere
     MD_AR = 1;
     delay_10us();
     MD_AR = 0;
-    timerDelay();
 }
 void mesure() interrupt 18 {
     if ((P3IF & 0x04) == 0x04) {  //P3IF is rising edge
@@ -75,7 +67,7 @@ void mesure() interrupt 18 {
         P3IF &= 0xFB;   //set on falling edge
     } else {
         T4CON &= 0xFB;                       //desactivation du timer4
-        distance = (TH4 << 8 + TL4) / 120;   //conversion distance en cm
+        distance = (TH4 * 256 + TL4) / 120;   //conversion distance en cm
         P3IF |= 0x04;                        //set rising edge
         mesure_flag = 1;
     }
@@ -83,11 +75,11 @@ void mesure() interrupt 18 {
 }
 
 void mesure_distance(char *typeCmd, char *cmd) {
-	if (cmd == "B") {  //'Back' pour l'arriere
+	if (strcmp(cmd, "B")) {  //'Back' pour l'arriere
 		MES_Dist_AR();
 	}
 	esle {
-		if (cmd == 'F') {  //'Front' pour l'arriere
+		if (strcmp(cmd, "F")) {  //'Front' pour l'arriere
 			MES_Dist_AV();
 		} else {
 			distance = -1;
@@ -96,10 +88,11 @@ void mesure_distance(char *typeCmd, char *cmd) {
 	}
 }
 
-unsigned int MOU(char *typeCmd, char *cmd) {
+char* MOU(char *typeCmd, char *cmd) {
     char ret[] = 0;
     mesure_distance(typeCmd, cmd);
     while (!mesure_flag) {}
     mesure_flag = 0;
-    return sprintf(ret, "%d", distance);
+    sprintf(ret, "%d", distance);
+    return ret;
 }
