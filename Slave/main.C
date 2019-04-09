@@ -4,6 +4,7 @@
 #include "command.h"
 #include "COM_UART.h"
 #include "timers.h"
+#include "servo_V.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
@@ -42,6 +43,7 @@ void main(void) {
 	EA = 1;
 	
 	//init
+	initServoV();
 	
 	while (1) {
 		putty();
