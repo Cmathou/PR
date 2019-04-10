@@ -157,14 +157,14 @@ f = open('logs/logfreqfile.txt','a')
 # affichage en console et écriture sur le fichier log des résultats
 if len(liste_bip)>1:
     print "Il y a %d bips a %d Hz d'environ %d ms espaces d'environ %d ms" % (len(liste_bip), freq_moy, duree_bip*1000, duree_sil*1000)
-    f.write("test à la date\t"+ str(datetime.datetime.now())+ "\n"+ str(len(liste_bip))+"\t"+ str(int(freq_moy))+ "\t"+ str(int(duree_bip*1000))+ "\t"+ str(int(duree_sil*1000))+ "\n\n")
+    f.write("test à la date\t"+ str(datetime.datetime.now())+ "\t"+ nom_fich + "\n"+ str(len(liste_bip))+"\t"+ str(int(freq_moy))+ "\t"+ str(int(duree_bip*1000))+ "\t"+ str(int(duree_sil*1000))+ "\n\n")
 else:
     if len(liste_bip)==1:
         print "Il y a un unique bip de %d ms a %d Hz" % (duree_bip*1000, freq_moy)
-        f.write("test à la date\t"+ str(datetime.datetime.now())+ "\n"+ str(len(liste_bip))+ "\t"+ str(int(freq_moy))+ "\t"+ str(int(duree_bip*1000))+ "\n\n")
+        f.write("test à la date\t"+ str(datetime.datetime.now())+ "\t"+ nom_fich + "\n"+ str(len(liste_bip))+ "\t"+ str(int(freq_moy))+ "\t"+ str(int(duree_bip*1000))+ "\n\n")
     else:
         print "ERREUR: Aucun bip detecte"
-        f.write("test à la date\t"+ str(datetime.datetime.now())+ "\n"+ "ERREUR DETEC\n\n")
+        f.write("test à la date\t"+ str(datetime.datetime.now())+ "\t"+ nom_fich + "\n"+ "ERREUR DETEC\n\n")
 
 #fermeture du fichier
 f.close()
