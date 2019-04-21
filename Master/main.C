@@ -15,16 +15,16 @@ static char cmd[32] = "\0";
 void putty() {
 	char c[2];
 	while ((c[0] = serInchar()) != 0) {
-			serOutchar(c[0]);
-			if (c[0] == '\r') {
-				serOutchar('\n');
-				process(cmd);
-				cmd[0] = '\0';
-			}
-			else {
-				strcat(cmd, c);
-			}
+		serOutchar(c[0]);
+		if (c[0] == '\r') {
+			serOutchar('\n');
+			process(cmd);
+			cmd[0] = '\0';
 		}
+		else {
+			strcat(cmd, c);
+		}
+	}
 }
 
 void callback() {
@@ -50,6 +50,10 @@ void main(void) {
 	serOutstring1("stop\r");
 	init_servoH();
 	initObs();
+	while ((serInchar1()) != 0) {
+		
+	}
+	serOutchar('>');
 
 	while (1) {
 		ServoHorizontal("","","");
