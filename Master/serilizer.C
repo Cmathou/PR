@@ -4,6 +4,7 @@
 #include <string.h>
 #include "timers.h"
 #include "command.h"
+#include "serilizer.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
@@ -15,11 +16,13 @@ static timeType time = 0;
 static int dS = 20;
 
 static phase = 0;
-static params1;
-static params2;
-static params3;
+static char params1[8];
+static char params2[8];
+static char params3[8];
 
 void testValid() {
+	valid();
+	/*
 	char c[2] = '\0';
 	char answer[16] = "\0";
 	while ((c[0] = serInchar1()) != 0) {
@@ -34,13 +37,13 @@ void testValid() {
 		else {
 			strcat(answer, c);
 		}
-	}
+	}*/
 }
 
 void timeSerilizer() {
     if (timePass(time)) {
+			time = 0;
 			G(params1, params2, params3);
-			time = 0;	
     }
 }
 
@@ -101,15 +104,16 @@ void AB(char *param, char sign)
 void RA(char *param1, char *param2) {
 	char outstr[64] = "digo 1:";
 	int param = atoi(param2);
+	char temp[8];
 	param *= rot;
-	sprintf(param2, "%d", param);
+	sprintf(temp, "%d", param);
 	if (strcmp(param1, "G") == 0) {
-		strcat(strcat(strcat(strcat(outstr, param2), ":10 2:-"), param2), ":10\r");
+		strcat(strcat(strcat(strcat(outstr, temp), ":10 2:-"), temp), ":10\r");
 		serOutstring1(outstr);
 	} else {
 		if (strcmp(param1, "D") == 0) {
 			strcat(outstr, "-");
-			strcat(strcat(strcat(strcat(outstr, param2), ":10 2:"), param2), ":10\r");
+			strcat(strcat(strcat(strcat(outstr, temp), ":10 2:"), temp), ":10\r");
 			serOutstring1(outstr);
 		} else {
 			invalid();
@@ -122,36 +126,49 @@ void G(char *param1, char *param2, char *param3) {
 	char outstr[64] = "digo 1:";
 	int x = atoi(param1);
 	int y = atoi(param2);
-    params1 = param1;
-    params2 = param2;
-    params3 = param3;
-    sprintf(param3, "%d", 90 - atoi(param3));
+	char param1t[8];
+	char param2t[8];
+	char param3t[8];
+	strcpy(param1t, param1);
+	strcpy(param2t, param2);
+	strcpy(param3t, param3);
+	if (phase == 0) {
+		strcpy(params1, param1);
+		strcpy(params2, param2);
+		strcpy(params3, param3);
+	}
+	sprintf(param3t, "%d", 90 - atoi(param3t));
 	x *= dist;
 	y *= dist;
-	sprintf(param1, "%d", x);
-	sprintf(param2, "%d", y);
-	strcat(strcat(strcat(strcat(outstr, param2), ":15 2:"), param2), ":15\r");
-    if (phase == 0) {
-	    serOutstring1(outstr);
-	    outstr[0] = '\0';
-        phase = 1;
-        time = getTime(2000);
-    }
-    if (phase == 1) {
-        RA("D", 90);
-        phase = 2;
-        time = getTime(2000);
-    }
-    if (phase ==2) {
-        strcat(outstr, "digo 1:");
-        strcat(strcat(strcat(strcat(outstr, param1), ":15 2:"), param1), ":15\r");
-        phase = 3;
-        time = getTime(2000);
-    }
-    if (phase == 3) {
-	    RA("G", param3);
-        phase = 0;
-    }
+	sprintf(param1t, "%d", x);
+	sprintf(param2t, "%d", y);
+	if (phase == 0) {
+			strcat(strcat(strcat(strcat(outstr, param2t), ":15 2:"), param2t), ":15\r");
+			serOutstring1(outstr);
+			outstr[0] = '\0';
+			phase = 1;
+			time = getTime(3000);
+			testValid();
+	} else {
+		if (phase == 1) {
+				RA("D", "90");
+				phase = 2;
+				time = getTime(1500);
+		} else {
+			if (phase == 2) {
+					strcat(strcat(strcat(strcat(outstr, param1t), ":15 2:"), param1t), ":15\r");
+					serOutstring1(outstr);
+					phase = 3;
+					time = getTime(3000);
+					testValid();
+			} else {
+				if (phase == 3) {
+						RA("G", param3t);
+						phase = 0;
+				}
+			}
+		}
+	}
 }
 
 void S() {

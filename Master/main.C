@@ -47,13 +47,13 @@ void main(void) {
 	EA = 1;
 	
 	//init
-	serOutstring1("stop\r");
 	init_servoH();
 	initObs();
 	while ((serInchar1()) != 0) {
 		
 	}
 	serOutchar('>');
+	serOutstring1("stop\r");
 
 	while (1) {
 		ServoHorizontal("","","");
