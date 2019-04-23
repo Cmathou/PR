@@ -40,10 +40,12 @@ void main(void) {
 	init_Serial_Buffer();
 	init_Serial_Buffer1();
 	
+	
 	EA = 1;
 	
 	//init
 	initServoV();
+	
 	
 	while (1) {
 		putty();

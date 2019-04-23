@@ -40,7 +40,7 @@ void initServoV() {
     XBR2 = XBR2 | 0x40;
 }
 
-void setServoVertical(char* cmd, char* param1, char* param2) {
+char setServoVertical(char* cmd, char* param1, char* param2) {
     if (strcmp(param1, 'V')) {                          // 'H' pour le servo horizontal, 'V' pour le vertical
         timeHighServoVerti = 1500 + atoi(param2) * 10;  //consigne = +/- 90 => timeHigh = [600; 2400] us
 

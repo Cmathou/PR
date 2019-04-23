@@ -8,7 +8,7 @@
 #include "ringB/UART1_RingBuffer_lib.h"
 
 int process(char* cmd_str) {
-	char xdata retour[8];
+	char retour[8];
 	char cmd[4] = "\0";
 	char param1[7] = "\0";
 	char param2[7] = "\0";
@@ -22,13 +22,13 @@ int process(char* cmd_str) {
 	}
 
 	if (strcmp(cmd, "L") == 0) {	//lumiere
-		LumiereDegra(param1, param2, param3, param4);
+		//LumiereDegra(param1, param2, param3, param4);
 		valid();
 		return 0;
 	}
 	
 	if (strcmp(cmd, "CS") == 0) {		//servo
-		if (setServoVertical(cmd, param1, param2) == 1) {
+		if (!setServoVertical(cmd, param1, param2)) {
 			valid();
 		}
 		else {
