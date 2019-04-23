@@ -29,7 +29,7 @@ void enable_int_courant() {
 
 
 void configADC0(){
-	AMX0CF = 0x00; //toutes les entrées indep
+	AMX0CF = 0x00; //toutes les entrÃ©es indep
 	AMX0SL = 0x00; //selection de AIN0/AIN1
 	ADC0CF |= 0xF0; //internal gain = 1
 	ADC0CN = 0xC0; //conversion par ecriture de 1 dans ad0busy
@@ -109,28 +109,3 @@ int mesureEnergie(char* cmd){
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void main(){
-	WDTCN = 0xDE;   // Devalidation du watchdog 
-	WDTCN = 0xAD;
-
-	OSCXCN =  0xef; //configure external oscillator
-	timerDelay();
-	while(!(OSCXCN&(0x80))){}
-
-	OSCICN = OSCICN | 0x08; //utilise l'oscillateur externe
-	
-	initCourant();
-		
-	timer_3();
-		
-	while(1) 
-	{
-		mesureCourant("MI");
-		timerDelay();
-		timeEnergy();
-		timerDelay();
-		mesureEnergie("ME");
-		timerDelay();
-	}
-}
