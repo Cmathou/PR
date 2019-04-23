@@ -12,7 +12,6 @@
 static char D_nbr = 0;
 
 int process(char* cmd_str) {
-    //char c[2];
     char retour[8];
     char cmd[4] = "\0";
     char param1[7] = "\0";
@@ -38,16 +37,6 @@ int process(char* cmd_str) {
             return 0;
         }
 
-				if (strcmp(cmd, "RA") == 0) {  //tourne
-            RA(param1, param2);
-            return 0;
-        }
-				
-				if (strcmp(cmd, "G") == 0) {  //coord
-            G(param1, param2, param3);
-            return 0;
-        }
-				
         if (strcmp(cmd, "A") == 0) {  //avance
             AB(param1, '0');
             return 0;
@@ -69,17 +58,25 @@ int process(char* cmd_str) {
         }
 
         if (strcmp(cmd, "RD") == 0) {  //rotation de 90° droite
-            RA("D", "90");
+            R(0, 0);
             return 0;
         }
 
         if (strcmp(cmd, "RG") == 0) {  //rotation de 90° gauche
-            RA("G", "90");
+            R(1, 0);
             return 0;
         }
 
         if (strcmp(cmd, "RC") == 0) {  //rotation de 180°
-            RA(param1, "180");
+            if (strcmp(param1, "D") == 0) {
+                R(0, 1);
+            } else {
+                if (strcmp(param1, "G") == 0) {
+                    R(1, 1);
+                } else {
+                    invalid();
+                }
+            }
             return 0;
         }
 
@@ -125,15 +122,15 @@ int process(char* cmd_str) {
 ////////////////////////////////////////////////////////
 
 void valid() {
-    serOutstring(">");
+    serOutstring(">\r\n");
 }
 
 void invalid() {
-    serOutstring("#");
+    serOutstring("#\r\n");
 }
 
 void D(char* param) {
-    int d = atoi(param);
+    int xdata d = atoi(param);
     if (d > 0 && d < 9) {
         D_nbr = d;
         serOutstring("début de l'épreuve!\r\n");
