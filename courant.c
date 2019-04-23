@@ -58,7 +58,7 @@ int mesureCourant(char* cmd){
 			
 		tension = (27*(ADC0*Vref)/(100*pow(2, 10)));
 			
-		courant = 1000*(tension/20)/shuntRes; //mV -> A, gain 20 (R = 2.7kOhm)
+		courant = (tension/20)/shuntRes; //mV -> mA, gain 20 (R = 2.7kOhm)
 	}
 	
 	return courant;
