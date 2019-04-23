@@ -8,10 +8,10 @@
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-static char xdata cmd[32] = "\0";
+static char cmd[32] = "\0";
 
 void putty() {
-	char c[2];
+	char c[2] = "\0\0";
 	while ((c[0] = serInchar()) != 0) {
 			serOutchar(c[0]);
 			if (c[0] == '\r') {
