@@ -9,6 +9,8 @@
 #include "ringB/UART1_RingBuffer_lib.h"
 
 #define R90 430
+#define rot 500.0/90
+#define dist 2500.0/8.3
 
 static timeType time = 0;
 static int dS = 20;
