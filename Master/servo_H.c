@@ -8,9 +8,10 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int timeHighServoHoriz = 0;
-unsigned int valTimer = 0;
-unsigned int valHigh = 0;
+static int timeHighServoHoriz = 0;
+static unsigned int valTimer = 0;
+static unsigned int valHigh = 0;
+static char * angle = "XX";
 
 sbit OutServoH = P3 ^ 7; //à changer
 
@@ -48,15 +49,19 @@ int ServoHorizontal(char* cmd, char* param1, char* param2){
 
 	if(strcmp(cmd, "CS") == 0){
 		if(strcmp(param1, "H") == 0){
-	
+			
 			timeHighServoHoriz = 1500+atoi(param2)*10; //consigne = +/- 90 => timeHigh = [600; 2400] us
+			
+			angle = param2;
 			
 			if(timeHighServoHoriz < 600){
 				timeHighServoHoriz = 600;
+				angle = "-90";
 			}
 			
 			if(timeHighServoHoriz > 2400){
 				timeHighServoHoriz = 2400;
+				angle = "90";
 			}
 		}
 	}
@@ -70,4 +75,8 @@ int ServoHorizontal(char* cmd, char* param1, char* param2){
 		OutServoH = 0;
 	}
 	return 1;
+}
+
+char * angleActuel(){
+	return angle;
 }
