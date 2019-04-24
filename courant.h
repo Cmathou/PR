@@ -1,2 +1,3 @@
-void initCourant();
-int mesureCourant(char*);
+void initCourant(void);
+char* mesureCourant(char*);
+char* mesureEnergie(char*);

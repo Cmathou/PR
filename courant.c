@@ -1,4 +1,5 @@
 #include "c8051F020.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -42,7 +43,8 @@ void initCourant(){
 	enable_int_courant();
 }
 
-int mesureCourant(char* cmd){
+char* mesureCourant(char* cmd){
+	char ret[8];
 	float courant = 0;
 	float tension = 0;
 	float shuntRes = 50; //mOhms
@@ -60,8 +62,8 @@ int mesureCourant(char* cmd){
 			
 		courant = (tension/20)/shuntRes; //mV -> mA, gain 20 (R = 2.7kOhm)
 	}
-	
-	return courant;
+	sprintf(ret, "%f", courant);
+	return ret;
 }
 
 //////////////////////
@@ -96,12 +98,13 @@ void timeEnergy() {
     }
 }
 
-int mesureEnergie(char* cmd){
-	
+char* mesureEnergie(char* cmd){
+	char ret[8];
 	if(strcmp(cmd, "ME") == 0){
-		return energie;	
+		sprintf(ret, "%f", energie);
+		return ret;	
 	} else {
-		return 0;
+		return "0";
 	}
 	
 }
