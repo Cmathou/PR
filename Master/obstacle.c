@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "c8051F020.h"
+#include "servo_H.h"
 
 //sbit LED = P1 ^ 6;
 // MD = P3 ^ 2 ;
@@ -25,7 +26,7 @@ static char xdata mesure_flag = 0;
 // Fonction d'initialisation des differents registres
 void initObs() {
     XBR2 |= 0x40;
-    P3MDOUT |= 0x1C;  //Gestion des entrÃ©es/sorties
+    P3MDOUT |= 0x1C;  //Gestion des entrées/sorties
     MD_AV = 0;
     MD_AR = 0;
 
@@ -41,7 +42,7 @@ void initObs() {
     mesure_flag = 0;
 }
 
-// Delay pour le trigger du tÃ©lÃ©mÃ©tre
+// Delay pour le trigger du télémétre
 void delay_10us() {  //13us
     int i;
     for (i = 0; i < 22; i++) {
@@ -93,6 +94,6 @@ char* MOU(char *typeCmd, char *cmd) {
     mesure_distance(typeCmd, cmd);
     while (!mesure_flag) {}
     mesure_flag = 0;
-    sprintf(ret, "%d", distance);
+    sprintf(ret, "%s : %d", angleActuel(), distance);
     return ret;
 }
