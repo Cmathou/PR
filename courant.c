@@ -47,7 +47,7 @@ char* mesureCourant(char* cmd){
 	char ret[8];
 	float courant = 0;
 	float tension = 0;
-	float shuntRes = 50; //mOhms
+	float shuntRes = 0.050; //Ohms
 	float Vref = 2.40;
 	
 	if(strcmp(cmd, "MI") == 0){
@@ -60,7 +60,7 @@ char* mesureCourant(char* cmd){
 			
 		tension = (27*(ADC0*Vref)/(100*pow(2, 10)));
 			
-		courant = (tension/20)/shuntRes; //mV -> mA, gain 20 (R = 2.7kOhm)
+		courant = 1000*(tension/20)/shuntRes; //V -> mA, gain 20 (R = 2.7kOhm)
 	}
 	sprintf(ret, "%f", courant);
 	return ret;
@@ -71,7 +71,7 @@ float power(){
 	float courantP = 0;
 	float tensionP = 0;
 	float puissance = 0;
-	float shuntRes = 50; //mOhms
+	float shuntRes = 0.050; //Ohms
 	float Vref = 2.40;
 	
 	AD0INT = 0;
@@ -83,7 +83,7 @@ float power(){
 		
 	tensionP = (27*(ADC0*Vref)/(100*pow(2, 10)));
 		
-	courantP = 1000*(tensionP/20)/shuntRes; //mV -> A, gain 20 (R = 2.7kOhm)
+	courantP = (tensionP/20)/shuntRes; //gain 20 (R = 2.7kOhm)
 		
 	puissance = tensionP*courantP;
 
@@ -108,7 +108,3 @@ char* mesureEnergie(char* cmd){
 	}
 	
 }
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
