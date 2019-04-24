@@ -3,15 +3,17 @@
 #include <string.h>
 #include "c8051F020.h"
 #include "command.h"
+#include "obstacle.h"
+#include "courant.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
+#include "serilizer.h"
 #include "servo_H.h"
 
-static char xdata D_nbr = 0;
+static char D_nbr = 0;
 
 int process(char* cmd_str) {
-    //char xdata retourC[8];
-    //int xdata retourI;
+    char retour[8];
     char cmd[4] = "\0";
     char param1[7] = "\0";
     char param2[7] = "\0";
@@ -30,11 +32,16 @@ int process(char* cmd_str) {
     }
 
     if (D_nbr != 0) {
-        if (strcmp(cmd, "L") == 0) {  //lumiere
-            //LumiereDegra(param1, param2, param3, param4);
-            valid();
+			
+        if (strcmp(cmd, "RA") == 0) {  //tourne
+            RA(param1, param2);
             return 0;
         }
+				
+				if (strcmp(cmd, "G") == 0) {  //coord
+            G(param1, param2, param3);
+            return 0;
+				}
 
         if (strcmp(cmd, "A") == 0) {  //avance
             AB(param1, '0');
@@ -45,6 +52,24 @@ int process(char* cmd_str) {
             AB(param1, '1');
             return 0;
         }
+				
+	if(strcmp(cmd, "MI") == 0) {	//courant inst
+		strcpy(retour, mesureCourant(cmd));
+		serOutstring("Courant instant: ");
+		serOutstring(retour);
+		serOutstring(" mA\r\n");
+		valid();
+		return 0;
+	}
+
+	if(strcmp(cmd, "ME") == 0) {	//courant tot
+		strcpy(retour, mesureEnergie(cmd));
+		serOutstring("Energie conso: ");
+		serOutstring(retour);
+		serOutstring(" J\r\n");
+		valid();
+		return 0;
+	}
 
         if (strcmp(cmd, "TV") == 0) {  //vittesse par default
             TV(param1);
@@ -80,38 +105,33 @@ int process(char* cmd_str) {
         }
 
         if (strcmp(cmd, "CS") == 0) {  //servo H
-            if (param[0] == 'H') {
-                if (ServoHorizontal(cmd, param1, param2) == 1) {
-                    valid();
-                } else {
-                    invalid();
-                }
-                return 0;
+            if (ServoHorizontal(cmd, param1, param2) == 1) {
+                valid();
             } else {
-				//TODO SPI SEND
-			}
+                invalid();
+            }
+            return 0;
         }
-        /*
-		if (strcmp(cmd, "MOU") == 0) {		//mesure distance
-			retourI = mesure_distance(cmd, param1);
-			if (retourI != -1) {
-				sprintf(retourC, "%d", retourI);
-				serOutstring("Distance : ");
-				serOutstring(retourC);
-				serOutstring("\r\n");
-				valid();
-			}
-			else {
-				invalid();
-			}
-			return 0;
-		}*/
+
+        if (strcmp(cmd, "MOU") == 0) {  //mesure distance
+            strcpy(retour, MOU(cmd, param1));
+            if (retour != -1) {
+                serOutstring("Distance : ");
+                serOutstring(retour);
+                serOutstring("\r\n");
+                valid();
+            } else {
+                invalid();
+            }
+            return 0;
+        }
     }
 
     if (strcmp(cmd, "E") == 0) {  //fin d'epreuve
         D_nbr = 0;
         valid();
         return 0;
+				
     }
 
     invalid();
@@ -127,11 +147,11 @@ int process(char* cmd_str) {
 ////////////////////////////////////////////////////////
 
 void valid() {
-    serOutstring(">\r\n");
+    serOutstring(">");
 }
 
 void invalid() {
-    serOutstring("#\r\n");
+    serOutstring("#");
 }
 
 void D(char* param) {
