@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdio.h>
+#include <string.h>
 #include "c8051F020.h"
 #include "command.h"
 #include "COM_UART.h"
 #include "timers.h"
 #include "servo_H.h"
 #include "serilizer.h"
+#include "obstacle.h"
+#include "courant.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-static char xdata cmd[32] = "\0";
+static char cmd[32] = "\0";
 
 void putty() {
 	char c[2];
@@ -28,6 +32,7 @@ void putty() {
 
 void callback() {
 	timeSerilizer();
+	timeEnergy();
 }
 
 void main(void) {
@@ -47,7 +52,15 @@ void main(void) {
 	
 	//init
 	init_servoH();
+	initObs();
+	initCourant();
 	
+	while ((serInchar1()) != 0) {
+		
+	}
+	serOutchar('>');
+	serOutstring1("stop\r");
+
 	while (1) {
 		ServoHorizontal("","","");
 		putty();

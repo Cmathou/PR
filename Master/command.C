@@ -11,6 +11,9 @@
 #include "servo_H.h"
 
 static char D_nbr = 0;
+static float courant = 0.0;
+static float energie = 0.0;
+
 
 int process(char* cmd_str) {
     char retour[8];
@@ -32,16 +35,11 @@ int process(char* cmd_str) {
     }
 
     if (D_nbr != 0) {
-			
-        if (strcmp(cmd, "RA") == 0) {  //tourne
-            RA(param1, param2);
+        if (strcmp(cmd, "L") == 0) {  //lumiere
+            //LumiereDegra(param1, param2, param3, param4);
+            valid();
             return 0;
         }
-				
-				if (strcmp(cmd, "G") == 0) {  //coord
-            G(param1, param2, param3);
-            return 0;
-				}
 
         if (strcmp(cmd, "A") == 0) {  //avance
             AB(param1, '0');
@@ -52,24 +50,6 @@ int process(char* cmd_str) {
             AB(param1, '1');
             return 0;
         }
-				
-	if(strcmp(cmd, "MI") == 0) {	//courant inst
-		strcpy(retour, mesureCourant(cmd));
-		serOutstring("Courant instant: ");
-		serOutstring(retour);
-		serOutstring(" mA\r\n");
-		valid();
-		return 0;
-	}
-
-	if(strcmp(cmd, "ME") == 0) {	//courant tot
-		strcpy(retour, mesureEnergie(cmd));
-		serOutstring("Energie conso: ");
-		serOutstring(retour);
-		serOutstring(" J\r\n");
-		valid();
-		return 0;
-	}
 
         if (strcmp(cmd, "TV") == 0) {  //vittesse par default
             TV(param1);
@@ -125,13 +105,43 @@ int process(char* cmd_str) {
             }
             return 0;
         }
+				
+				if (strcmp(cmd, "MI") == 0) {  //mesure courant
+            strcpy(retour, mesureCourant(cmd));
+            if (retour != -1) {
+                serOutstring("courant instantane : ");
+                serOutstring(retour);
+                serOutstring(" mA \r\n");
+                valid();
+            } else {
+                invalid();
+            }
+            return 0;
+        }
+				
+				if (strcmp(cmd, "ME") == 0) {  //mesure energie
+            strcpy(retour, mesureEnergie(cmd));
+            if (retour != -1) {
+                serOutstring("energie conso : ");
+                serOutstring(retour);
+                serOutstring(" J \r\n");
+                valid();
+            } else {
+                invalid();
+            }
+            return 0;
+        }
+				
+				
+				
     }
 
     if (strcmp(cmd, "E") == 0) {  //fin d'epreuve
         D_nbr = 0;
+				courant = 0;
+				energie = 0;
         valid();
         return 0;
-				
     }
 
     invalid();
@@ -147,11 +157,11 @@ int process(char* cmd_str) {
 ////////////////////////////////////////////////////////
 
 void valid() {
-    serOutstring(">");
+    serOutstring(">\r\n");
 }
 
 void invalid() {
-    serOutstring("#");
+    serOutstring("#\r\n");
 }
 
 void D(char* param) {

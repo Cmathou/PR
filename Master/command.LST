@@ -1,0 +1,205 @@
+C51 COMPILER V9.52.0.0   COMMAND                                                           04/30/2019 11:12:53 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE COMMAND
+OBJECT MODULE PLACED IN command.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE command.C LARGE BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <stdlib.h>
+   3          #include <string.h>
+   4          #include "c8051F020.h"
+   5          #include "command.h"
+   6          #include "obstacle.h"
+   7          #include "courant.h"
+   8          #include "ringB/UART0_RingBuffer_lib.h"
+   9          #include "ringB/UART1_RingBuffer_lib.h"
+  10          #include "serilizer.h"
+  11          #include "servo_H.h"
+  12          
+  13          static char D_nbr = 0;
+  14          static float courant = 0.0;
+  15          static float energie = 0.0;
+  16          
+  17          
+  18          int process(char* cmd_str) {
+  19   1          char retour[8];
+  20   1          char cmd[4] = "\0";
+  21   1          char param1[7] = "\0";
+  22   1          char param2[7] = "\0";
+  23   1          char param3[7] = "\0";
+  24   1          char param4[7] = "\0";
+  25   1          sscanf(cmd_str, "%s %s %s %s %s", cmd, param1, param2, param3, param4);
+  26   1      
+  27   1          if (strcmp(cmd, "Q") == 0) {  //arret urgence
+  28   2              //TODO
+  29   2              return 0;
+  30   2          }
+  31   1      
+  32   1          if (strcmp(cmd, "D") == 0) {  //debut epreuve
+  33   2              D(param1);
+  34   2              return 0;
+  35   2          }
+  36   1      
+  37   1          if (D_nbr != 0) {
+  38   2              if (strcmp(cmd, "L") == 0) {  //lumiere
+  39   3                  //LumiereDegra(param1, param2, param3, param4);
+  40   3                  valid();
+  41   3                  return 0;
+  42   3              }
+  43   2      
+  44   2              if (strcmp(cmd, "A") == 0) {  //avance
+  45   3                  AB(param1, '0');
+  46   3                  return 0;
+  47   3              }
+  48   2      
+  49   2              if (strcmp(cmd, "B") == 0) {  //recule
+  50   3                  AB(param1, '1');
+  51   3                  return 0;
+  52   3              }
+  53   2      
+  54   2              if (strcmp(cmd, "TV") == 0) {  //vittesse par default
+  55   3                  TV(param1);
+C51 COMPILER V9.52.0.0   COMMAND                                                           04/30/2019 11:12:53 PAGE 2   
+
+  56   3                  return 0;
+  57   3              }
+  58   2      
+  59   2              if (strcmp(cmd, "S") == 0) {  //stop les moteurs
+  60   3                  S();
+  61   3                  return 0;
+  62   3              }
+  63   2      
+  64   2              if (strcmp(cmd, "RD") == 0) {  //rotation de 90° droite
+  65   3                  R(0, 0);
+  66   3                  return 0;
+  67   3              }
+  68   2      
+  69   2              if (strcmp(cmd, "RG") == 0) {  //rotation de 90° gauche
+  70   3                  R(1, 0);
+  71   3                  return 0;
+  72   3              }
+  73   2      
+  74   2              if (strcmp(cmd, "RC") == 0) {  //rotation de 180°
+  75   3                  if (strcmp(param1, "D") == 0) {
+  76   4                      R(0, 1);
+  77   4                  } else {
+  78   4                      if (strcmp(param1, "G") == 0) {
+  79   5                          R(1, 1);
+  80   5                      } else {
+  81   5                          invalid();
+  82   5                      }
+  83   4                  }
+  84   3                  return 0;
+  85   3              }
+  86   2      
+  87   2              if (strcmp(cmd, "CS") == 0) {  //servo H
+  88   3                  if (ServoHorizontal(cmd, param1, param2) == 1) {
+  89   4                      valid();
+  90   4                  } else {
+  91   4                      invalid();
+  92   4                  }
+  93   3                  return 0;
+  94   3              }
+  95   2      
+  96   2              if (strcmp(cmd, "MOU") == 0) {  //mesure distance
+  97   3                  strcpy(retour, MOU(cmd, param1));
+  98   3                  if (retour != -1) {
+  99   4                      serOutstring("Distance : ");
+ 100   4                      serOutstring(retour);
+ 101   4                      serOutstring("\r\n");
+ 102   4                      valid();
+ 103   4                  } else {
+ 104   4                      invalid();
+ 105   4                  }
+ 106   3                  return 0;
+ 107   3              }
+ 108   2              
+ 109   2              if (strcmp(cmd, "MI") == 0) {  //mesure courant
+ 110   3                  strcpy(retour, mesureCourant(cmd));
+ 111   3                  if (retour != -1) {
+ 112   4                      serOutstring("courant instantane : ");
+ 113   4                      serOutstring(retour);
+ 114   4                      serOutstring(" mA \r\n");
+ 115   4                      valid();
+ 116   4                  } else {
+ 117   4                      invalid();
+C51 COMPILER V9.52.0.0   COMMAND                                                           04/30/2019 11:12:53 PAGE 3   
+
+ 118   4                  }
+ 119   3                  return 0;
+ 120   3              }
+ 121   2              
+ 122   2              if (strcmp(cmd, "ME") == 0) {  //mesure energie
+ 123   3                  strcpy(retour, mesureEnergie(cmd));
+ 124   3                  if (retour != -1) {
+ 125   4                      serOutstring("energie conso : ");
+ 126   4                      serOutstring(retour);
+ 127   4                      serOutstring(" J \r\n");
+ 128   4                      valid();
+ 129   4                  } else {
+ 130   4                      invalid();
+ 131   4                  }
+ 132   3                  return 0;
+ 133   3              }
+ 134   2              
+ 135   2              
+ 136   2              
+ 137   2          }
+ 138   1      
+ 139   1          if (strcmp(cmd, "E") == 0) {  //fin d'epreuve
+ 140   2              D_nbr = 0;
+ 141   2              courant = 0;
+ 142   2              energie = 0;
+ 143   2              valid();
+ 144   2              return 0;
+ 145   2          }
+ 146   1      
+ 147   1          invalid();
+ 148   1          return 1;
+ 149   1      }
+ 150          
+ 151          ////////////////////////////////////////////////////////
+ 152          //interrupt function
+ 153          ////////////////////////////////////////////////////////
+ 154          
+ 155          ////////////////////////////////////////////////////////
+ 156          //functions
+ 157          ////////////////////////////////////////////////////////
+ 158          
+ 159          void valid() {
+ 160   1          serOutstring(">\r\n");
+ 161   1      }
+ 162          
+ 163          void invalid() {
+ 164   1          serOutstring("#\r\n");
+ 165   1      }
+ 166          
+ 167          void D(char* param) {
+ 168   1          int xdata d = atoi(param);
+ 169   1          if (d > 0 && d < 9) {
+ 170   2              D_nbr = d;
+ 171   2              serOutstring("début de l'épreuve!\r\n");
+ 172   2              valid();
+ 173   2          } else {
+ 174   2              invalid();
+ 175   2          }
+ 176   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.52.0.0   COMMAND                                                           04/30/2019 11:12:53 PAGE 4   
+
+   CODE SIZE        =    974    ----
+   CONSTANT SIZE    =    187    ----
+   XDATA SIZE       =      9      43
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
