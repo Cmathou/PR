@@ -10,14 +10,16 @@
 #include "servo_H.h"
 
 static char D_nbr = 0;
+static char angle_horiz[4] = "XX";
+
 
 int process(char* cmd_str) {
     char retour[8];
-    char cmd[4] = "\0";
-    char param1[7] = "\0";
-    char param2[7] = "\0";
-    char param3[7] = "\0";
-    char param4[7] = "\0";
+    char cmd[4] = "";
+    char param1[7] = "";
+    char param2[7] = "";
+    char param3[7] = "";
+    char param4[7] = "";
     sscanf(cmd_str, "%s %s %s %s %s", cmd, param1, param2, param3, param4);
 
     if (strcmp(cmd, "Q") == 0) {  //arret urgence
@@ -47,7 +49,7 @@ int process(char* cmd_str) {
             return 0;
         }
 
-        if (strcmp(cmd, "TV") == 0) {  //vittesse par default
+        if (strcmp(cmd, "TV") == 0) {  //vitesse par default
             TV(param1);
             return 0;
         }
@@ -81,8 +83,9 @@ int process(char* cmd_str) {
         }
 
         if (strcmp(cmd, "CS") == 0) {  //servo H
-            if (ServoHorizontal(cmd, param1, param2) == 1) {
-                valid();
+					if (ServoHorizontal(cmd, param1, param2) == 1) {
+								strcpy(angle_horiz, param2);
+								valid();
             } else {
                 invalid();
             }
@@ -91,8 +94,10 @@ int process(char* cmd_str) {
 
         if (strcmp(cmd, "MOU") == 0) {  //mesure distance
             strcpy(retour, MOU(cmd, param1));
+					
             if (retour != -1) {
-                serOutstring("Distance : ");
+								serOutstring(angle_horiz);
+                serOutstring(" : ");
                 serOutstring(retour);
                 serOutstring("\r\n");
                 valid();

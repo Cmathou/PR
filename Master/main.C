@@ -13,7 +13,7 @@
 static char cmd[32] = "\0";
 
 void putty() {
-	char c[2];
+	char c[2] = "\0\0";
 	while ((c[0] = serInchar()) != 0) {
 			serOutchar(c[0]);
 			if (c[0] == '\r') {
@@ -47,13 +47,9 @@ void main(void) {
 	EA = 1;
 	
 	//init
+	serOutstring1("stop\r");
 	init_servoH();
 	initObs();
-	while ((serInchar1()) != 0) {
-		
-	}
-	serOutchar('>');
-	serOutstring1("stop\r");
 
 	while (1) {
 		ServoHorizontal("","","");

@@ -1,5 +1,6 @@
-#include "c8051F020.h"
 #include "timers.h"
+#include "c8051F020.h"
+
 
 static timeType time = 0;
 

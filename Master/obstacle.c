@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "c8051F020.h"
-#include "servo_H.h"
 
 //sbit LED = P1 ^ 6;
 // MD = P3 ^ 2 ;
@@ -26,7 +25,7 @@ static char xdata mesure_flag = 0;
 // Fonction d'initialisation des differents registres
 void initObs() {
     XBR2 |= 0x40;
-    P3MDOUT |= 0x1C;  //Gestion des entrées/sorties
+    P3MDOUT |= 0x1C;  //Gestion des entrÃ©es/sorties
     MD_AV = 0;
     MD_AR = 0;
 
@@ -42,7 +41,7 @@ void initObs() {
     mesure_flag = 0;
 }
 
-// Delay pour le trigger du télémétre
+// Delay pour le trigger du tÃ©lÃ©mÃ©tre
 void delay_10us() {  //13us
     int i;
     for (i = 0; i < 22; i++) {
@@ -76,11 +75,11 @@ void mesure() interrupt 18 {
 }
 
 void mesure_distance(char *typeCmd, char *cmd) {
-	if (strcmp(cmd, "B")) {  //'Back' pour l'arriere
+	if (strcmp(cmd, "B") == 0) {  //'Back' pour l'arriere
 		MES_Dist_AR();
 	}
 	else {
-		if (strcmp(cmd, "F")) {  //'Front' pour l'arriere
+		if (strcmp(cmd, "F") == 0) {  //'Front' pour l'arriere
 			MES_Dist_AV();
 		} else {
 			distance = -1;
@@ -91,9 +90,10 @@ void mesure_distance(char *typeCmd, char *cmd) {
 
 char* MOU(char *typeCmd, char *cmd) {
     char ret[] = 0;
+		mesure_flag = 0;
     mesure_distance(typeCmd, cmd);
     while (!mesure_flag) {}
     mesure_flag = 0;
-    sprintf(ret, "%s : %d", angleActuel(), distance);
+    sprintf(ret, "%d", distance);
     return ret;
 }
