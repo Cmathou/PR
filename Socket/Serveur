@@ -10,14 +10,14 @@ public class Serveur
     { 	
         System.out.println("Serveur en écoute");
     	Scanner sc = new Scanner(System.in);
-    	Socket sock = new ServerSocket(9000).accept();
+    	Socket sock = new ServerSocket(9002).accept();
         System.out.println("Quel est l'extension souhaitée ?");
         String str = sc.nextLine();
         Commun.transfert(
                 sock.getInputStream(),
-                new FileOutputStream("E:\\reception." + str),
+                new FileOutputStream("F:\\reception." + str),
                 true);
-        
         sock.close(); 
+        System.out.println("transmission fini");
     } 
 }
