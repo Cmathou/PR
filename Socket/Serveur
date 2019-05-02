@@ -1,0 +1,23 @@
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Serveur
+{
+    public static void main(String...args) throws IOException 
+    { 	
+        System.out.println("Serveur en écoute");
+    	Scanner sc = new Scanner(System.in);
+    	Socket sock = new ServerSocket(9000).accept();
+        System.out.println("Quel est l'extension souhaitée ?");
+        String str = sc.nextLine();
+        Commun.transfert(
+                sock.getInputStream(),
+                new FileOutputStream("E:\\reception." + str),
+                true);
+        
+        sock.close(); 
+    } 
+}
