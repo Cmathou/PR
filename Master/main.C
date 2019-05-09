@@ -56,7 +56,6 @@ void main(void) {
 	serOutstring1("stop\r");
 
 	while (1) {
-		ServoHorizontal("","","");
 		putty();
 		callback();
 	}
