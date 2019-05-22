@@ -22,7 +22,9 @@ int process(char* cmd_str) {
     sscanf(cmd_str, "%s %s %s %s %s", cmd, param1, param2, param3, param4);
 		
     if (strcmp(cmd, "Q") == 0) {  //arret urgence
-        //TODO
+        spistring(cmd);
+        spichar('\n');
+        RSTSRC |= 0x10;
         return 0;
     }
 
@@ -41,7 +43,7 @@ int process(char* cmd_str) {
         }
     
         if (strcmp(cmd, "LS") == 0) {  //lumiere
-            spistring("LS");
+            spistring(cmd);
             spichar('\n');
             valid();
             return 0;
