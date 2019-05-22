@@ -42,8 +42,15 @@ int process(char* cmd_str) {
             return 0;
         }
     
-        if (strcmp(cmd, "LS") == 0) {  //lumiere
+        if (strcmp(cmd, "LS") == 0) {  //lumiere shutdown
             spistring(cmd);
+            spichar('\n');
+            valid();
+            return 0;
+        }
+
+        if (strcmp(cmd, "SD") == 0) {  //signaux sonores
+            spistring(cmd_str);
             spichar('\n');
             valid();
             return 0;

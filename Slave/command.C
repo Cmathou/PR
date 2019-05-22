@@ -34,6 +34,12 @@ int process(char* cmd_str) {
 		valid();
 		return 0;
 	}
+
+	if (strcmp(cmd, "SD") == 0) {  //signaux sonores
+			serOutstring(cmd_str);
+            valid();
+            return 0;
+        }
 	
 	if (strcmp(cmd, "CS") == 0) {		//servo
 		if (!setServoVertical(cmd, param1, param2)) {
