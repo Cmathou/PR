@@ -28,7 +28,7 @@ void enable_int() {
 }
 
 void configPCA0() {
-    PCA0MD = 0x09;
+    PCA0MD = 0x03;
     PCA0CPM0 = 0x49;
     CR = 1;
 }
@@ -52,7 +52,8 @@ char setServoVertical(char* cmd, char* param1, char* param2) {
         }
 
         valHigh = timeHighServoVerti * 22;
-
+				valHigh = valHigh/4;
+				
         PCA0CPL0 = valHigh & 0xFF;
         PCA0CPH0 = (valHigh >> 8) & 0xFF;
 

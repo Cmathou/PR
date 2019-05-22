@@ -5,6 +5,7 @@
 #include "COM_UART.h"
 #include "timers.h"
 #include "servo_V.h"
+#include "laser.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 #include "SPI.h"
@@ -35,6 +36,7 @@ void spicmd() {
 }
 
 void callback() {
+	timeLaser();
 }
 
 void main(void) {
@@ -52,8 +54,10 @@ void main(void) {
 	EA = 1;
 	
 	//init
+	timer_3();
 	initServoV();
 	init_SPI();
+	initLaser();
 	
 	
 	while (1) {

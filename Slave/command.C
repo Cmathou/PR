@@ -5,6 +5,7 @@
 #include "command.h"
 #include "SPI.h"
 #include "servo_V.h"
+#include "laser.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
@@ -23,7 +24,7 @@ int process(char* cmd_str) {
 	}
 
 	if (strcmp(cmd, "L") == 0) {	//lumiere
-		//LumiereDegra(param1, param2, param3, param4);
+		LumiereDegra(param1, param2, param3, param4);
 		valid();
 		return 0;
 	}
