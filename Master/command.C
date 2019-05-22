@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "c8051F020.h"
+#include "SPI.h"
 #include "command.h"
 #include "obstacle.h"
 #include "ringB/UART0_RingBuffer_lib.h"
@@ -9,17 +10,17 @@
 #include "serilizer.h"
 #include "servo_H.h"
 
-static char D_nbr = 0;
+static char D_nbr  = 0;
 
 int process(char* cmd_str) {
     char retour[8];
-    char cmd[4] = "\0";
-    char param1[7] = "\0";
-    char param2[7] = "\0";
-    char param3[7] = "\0";
-    char param4[7] = "\0";
+    char cmd[4] = "";
+    char param1[7] = "";
+    char param2[7] = "";
+    char param3[7] = "";
+    char param4[7] = "";
     sscanf(cmd_str, "%s %s %s %s %s", cmd, param1, param2, param3, param4);
-
+		
     if (strcmp(cmd, "Q") == 0) {  //arret urgence
         //TODO
         return 0;
@@ -80,13 +81,19 @@ int process(char* cmd_str) {
             return 0;
         }
 
-        if (strcmp(cmd, "CS") == 0) {  //servo H
+        if (strcmp(cmd, "CS") == 0) {  //servomoteur
+					if (strcmp(param1, "H") == 0) {
             if (ServoHorizontal(cmd, param1, param2) == 1) {
                 valid();
             } else {
                 invalid();
             }
-            return 0;
+					} else {
+						spistring(cmd_str);
+						spichar('\n');
+						valid();
+					}
+					return 0;
         }
 
         if (strcmp(cmd, "MOU") == 0) {  //mesure distance
@@ -122,15 +129,15 @@ int process(char* cmd_str) {
 ////////////////////////////////////////////////////////
 
 void valid() {
-    serOutstring(">\r\n");
+    serOutstring(">");
 }
 
 void invalid() {
-    serOutstring("#\r\n");
+    serOutstring("#");
 }
 
 void D(char* param) {
-    int xdata d = atoi(param);
+    int d = atoi(param);
     if (d > 0 && d < 9) {
         D_nbr = d;
         serOutstring("début de l'épreuve!\r\n");

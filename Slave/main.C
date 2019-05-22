@@ -7,11 +7,12 @@
 #include "servo_V.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
+#include "SPI.h"
 
 static char cmd[32] = "\0";
 
 void putty() {
-	char c[2] = "\0\0";
+	char c[2] = "";
 	while ((c[0] = serInchar()) != 0) {
 			serOutchar(c[0]);
 			if (c[0] == '\r') {
@@ -23,6 +24,14 @@ void putty() {
 				strcat(cmd, c);
 			}
 		}
+}
+
+void spicmd() {
+	if (spiflag == 1) {
+		spiflag = 0;
+		process(spir);
+		spir[0] = '\0';
+	}
 }
 
 void callback() {
@@ -40,15 +49,16 @@ void main(void) {
 	init_Serial_Buffer();
 	init_Serial_Buffer1();
 	
-	
 	EA = 1;
 	
 	//init
 	initServoV();
+	init_SPI();
 	
 	
 	while (1) {
-		putty();
+		//putty();
+		spicmd();
 		callback();
 	}
 }

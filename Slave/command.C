@@ -3,17 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "command.h"
+#include "SPI.h"
 #include "servo_V.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
 int process(char* cmd_str) {
 	char retour[8];
-	char cmd[4] = "\0";
-	char param1[7] = "\0";
-	char param2[7] = "\0";
-	char param3[7] = "\0";
-	char param4[7] = "\0";
+	char cmd[4] = "";
+	char param1[7] = "";
+	char param2[7] = "";
+	char param3[7] = "";
+	char param4[7] = "";
 	sscanf(cmd_str, "%s %s %s %s %s", cmd, param1, param2, param3, param4);
 	
 	if (strcmp(cmd, "Q") == 0) {	//arret urgence
@@ -36,7 +37,7 @@ int process(char* cmd_str) {
 		}
 		return 0;
 	}
-		
+	
 	invalid();
 	return 1;
 }
@@ -50,9 +51,9 @@ int process(char* cmd_str) {
 ////////////////////////////////////////////////////////
 
 void valid() {
-	serOutstring(">\r\n");
+	//spistring(">\n");
 }
 
 void invalid() {
-	serOutstring("#\r\n");
+	//spistring("#\n");
 }

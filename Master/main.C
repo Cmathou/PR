@@ -5,15 +5,16 @@
 #include "COM_UART.h"
 #include "timers.h"
 #include "servo_H.h"
+#include "SPI.h"
 #include "serilizer.h"
 #include "obstacle.h"
 #include "ringB/UART0_RingBuffer_lib.h"
 #include "ringB/UART1_RingBuffer_lib.h"
 
-static char cmd[32] = "\0";
+static char cmd[32] = "";
 
 void putty() {
-	char c[2];
+	char c[2] = "";
 	while ((c[0] = serInchar()) != 0) {
 			serOutchar(c[0]);
 			if (c[0] == '\r') {
@@ -49,6 +50,7 @@ void main(void) {
 	//init
 	init_servoH();
 	initObs();
+	initSPI();
 	while ((serInchar1()) != 0) {
 		
 	}
