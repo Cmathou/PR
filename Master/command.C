@@ -32,8 +32,17 @@ int process(char* cmd_str) {
     }
 
     if (D_nbr != 0) {
+
         if (strcmp(cmd, "L") == 0) {  //lumiere
-            //LumiereDegra(param1, param2, param3, param4);
+            spistring(cmd_str);
+            spichar('\n');
+            valid();
+            return 0;
+        }
+    
+        if (strcmp(cmd, "LS") == 0) {  //lumiere
+            spistring("LS");
+            spichar('\n');
             valid();
             return 0;
         }

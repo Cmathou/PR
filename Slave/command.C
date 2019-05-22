@@ -28,6 +28,12 @@ int process(char* cmd_str) {
 		valid();
 		return 0;
 	}
+
+	if (strcmp(cmd, "LS") == 0) {	//lumiere
+		LumiereDegra("0", "0", "0", "0");
+		valid();
+		return 0;
+	}
 	
 	if (strcmp(cmd, "CS") == 0) {		//servo
 		if (!setServoVertical(cmd, param1, param2)) {
