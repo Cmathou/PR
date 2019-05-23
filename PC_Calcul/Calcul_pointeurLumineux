@@ -1,0 +1,60 @@
+def CommandeLumineuse():
+    
+    import json
+
+    with open('Description_Environnement_SansAccent_V10-05-17.js') as json_data: #recup le fichier référancant obstacles, terrain ...
+        data_dict = json.load(json_data)
+    
+    #coord cible
+    cible_dict=data_dict.get("cible") 
+    centre_dict=cible_dict.get("centre")
+    hauteur_cible=cible_dict.get("hauteur")
+    Xcentre_cible=centre_dict.get("x")
+    Ycentre_cible=centre_dict.get("y")
+    
+    XlisteContours=[]
+    YlisteContours=[]
+    icontour=0
+    contour_liste=data_dict.get("contour_cible")
+   
+    while (icontour<len(contour_liste)):
+      
+      point_dict=contour_liste[icontour].get("point")
+      Xcontour=point_dict.get("x")
+      XlisteContours.append(Xcontour)
+      Ycontour=point_dict.get("y")
+      YlisteContours.append(Ycontour)
+        
+      icontour=icontour+1
+    print("debut test json")
+    print(XlisteContours)
+    print(YlisteContours)
+    print(Xcentre_cible)
+    print(Ycentre_cible)
+    print(hauteur_cible)
+    print("fin test")
+   
+
+    from math import atan2,degrees,sqrt,pow
+
+    angleradianX=atan2(Ycentre_cible,Xcentre_cible)
+    angleX=degrees(angleradianX)
+   
+    #print(angleX)
+    
+    distanceCible=sqrt(pow(Xcentre_cible,2)+pow(Ycentre_cible,2))
+    angleradianY=atan2(hauteur_cible,distanceCible)
+    angledegreeY=degrees(angleradianY)
+    angleY=-(90-angledegreeY)
+    
+    #print(angleY)
+    angles=[angleX,angleY]
+    
+    with open('angle.json', 'w') as f:
+        json.dump(angles, f)
+
+
+
+
+
+CommandeLumineuse()
